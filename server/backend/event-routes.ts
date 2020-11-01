@@ -15,6 +15,7 @@ import {
   userFieldsValidator,
   isUserValidator,
 } from "./validators";
+import { getAllEvents, getEventById } from './database';
 const router = express.Router();
 
 // Routes
@@ -28,8 +29,8 @@ interface Filter {
 }
 
 router.get('/all', (req: Request, res: Response) => {
-  res.send('/all')
-    
+  const events:Event[] = getAllEvents()
+  res.send(events)
 });
 
 router.get('/all-filtered', (req: Request, res: Response) => {
@@ -57,7 +58,8 @@ router.get('/retention', (req: Request, res: Response) => {
   res.send('/retention')
 });
 router.get('/:eventId',(req : Request, res : Response) => {
-  res.send('/:eventId')
+  const event:Event = getEventById(req.params.eventId)
+  res.send(event)
 });
 
 router.post('/', (req: Request, res: Response) => {

@@ -108,6 +108,7 @@ export const seedDatabase = () => {
   return;
 };
 
+
 export const getAllUsers = () => db.get(USER_TABLE).value();
 
 export const getAllPublicTransactions = () =>
@@ -175,6 +176,12 @@ export const removeUserFromResults = (userId: User["id"], results: User[]) =>
   remove({ id: userId }, results);
 
 // convenience methods
+
+// Events
+export const getEventBy = (key: string, value: any) => getBy(EVENT_TABLE, key, value);
+// All events
+export const getAllEvents = () => db.get(EVENT_TABLE).value();
+export const getEventById = (id: string) => getEventBy("_id", id);
 
 // User
 export const getUserBy = (key: string, value: any) => getBy(USER_TABLE, key, value);
