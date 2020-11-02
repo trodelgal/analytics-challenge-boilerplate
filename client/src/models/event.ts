@@ -52,6 +52,6 @@ export interface DaysEvents {
   count: number
 }
 export interface HoursEvents {
-  hour: string,
+  hour: string | number,
   count: number
 }

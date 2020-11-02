@@ -3,9 +3,16 @@
 import express from "express";
 import { Request, Response } from "express";
 
-import { Event, weeklyRetentionObject, RetentionCohort, Filter, DaysEvents, HoursEvents } from "../../client/src/models/event";
+import {
+  Event,
+  weeklyRetentionObject,
+  RetentionCohort,
+  Filter,
+  DaysEvents,
+  HoursEvents,
+  eventName,
+} from "../../client/src/models/event";
 import { ensureAuthenticated, validateMiddleware } from "./helpers";
-
 import {
   shortIdValidation,
   searchValidation,
@@ -21,7 +28,7 @@ import {
   getByHoursEvents,
   getEventFromDayZero,
   getEventFiltered,
-  createEvent
+  createEvent,
 } from "./database";
 import {
   startOfDayUTC,
@@ -32,8 +39,6 @@ import {
 const router = express.Router();
 
 // Routes
-
-
 
 router.get("/all", (req: Request, res: Response) => {
   const events: Event[] = getAllEvents();
@@ -51,33 +56,33 @@ router.get("/all-filtered", (req: Request, res: Response) => {
   // };
   const events = getEventFiltered(filters);
   let searchEvents: Event[] = [];
-  const search = filters.search? filters.search:'';
-    events.map((event) => {
-      if (
-        event._id.includes(search) ||
-        event.session_id.includes(search) ||
-        event.name.includes(search) ||
-        event.distinct_user_id.includes(search) ||
-        event.os.includes(search) ||
-        event.browser.includes(search)
-      ) {
-        searchEvents.push(event);
-      }
-    });
-    if ( filters.offset && searchEvents.length > filters.offset) {
-      const offsetEvents = searchEvents.slice(0, filters.offset);
-      const results = {
-        events: offsetEvents,
-        more: true,
-      };
-      res.send(results);
-    } else {
-      const results = {
-        events: searchEvents,
-        more: false,
-      };
-      res.send(results);
+  const search = filters.search ? filters.search : "";
+  events.map((event) => {
+    if (
+      event._id.includes(search) ||
+      event.session_id.includes(search) ||
+      event.name.includes(search) ||
+      event.distinct_user_id.includes(search) ||
+      event.os.includes(search) ||
+      event.browser.includes(search)
+    ) {
+      searchEvents.push(event);
     }
+  });
+  if (filters.offset && searchEvents.length > filters.offset) {
+    const offsetEvents = searchEvents.slice(0, filters.offset);
+    const results = {
+      events: offsetEvents,
+      more: true,
+    };
+    res.send(results);
+  } else {
+    const results = {
+      events: searchEvents,
+      more: false,
+    };
+    res.send(results);
+  }
 });
 
 router.get("/by-days/:offset", (req: Request, res: Response) => {
@@ -95,7 +100,7 @@ router.get("/by-days/:offset", (req: Request, res: Response) => {
     const date = new Date(events[key][0].date);
     resultsArr.push({ date: date, count: counter.length });
   }
-  resultsArr.sort((a:DaysEvents,b:DaysEvents)=> a.date.getTime() - b.date.getTime());
+  resultsArr.sort((a: DaysEvents, b: DaysEvents) => a.date.getTime() - b.date.getTime());
   res.send(resultsArr);
 });
 
@@ -142,11 +147,59 @@ router.get("/week", (req: Request, res: Response) => {
   res.send(events);
 });
 
+function getWeekEvents(event: any) {
+  let weekEventsArr: any[] = [];
+  let i: number = 1;
+  for (let key in event) {
+    const eventByWeek: any[] = event[key].slice();
+    weekEventsArr.push({ week: i, events: eventByWeek });
+    i++;
+  }
+  return weekEventsArr;
+}
+
 router.get("/retention", (req: Request, res: Response) => {
   const { dayZero } = req.query;
   const events = getEventFromDayZero(parseInt(dayZero));
+  const orderEvent: any[] = getWeekEvents(events);
+  const signUpEvent = orderEvent.map((event) => {
+    const weekSignUp = event.events.filter((value: Event) => value.name === "signup");
+    return { week: event.week, signUp: weekSignUp };
+  });
+  const weekUsers = signUpEvent.map((val) => {
+    const usersId = val.signUp.map((val: Event) => val.distinct_user_id);
+    return { week: val.week, users: usersId };
+  });
 
-  res.send(events);
+  const resultArr:weeklyRetentionObject[] = [];
+  
+  orderEvent.forEach((value,i) => {
+    resultArr.push({
+      registrationWeek: value.week,
+      newUsers: signUpEvent[i].signUp.length,
+      weeklyRetention: [100],
+      start: new Date(value.events[0].date).toLocaleDateString(),
+      end:new Date(value.events[value.events.length-1].date).toLocaleDateString()
+    })
+  })
+
+for (let thisWeek=0; thisWeek < orderEvent.length; thisWeek++) {
+  const thisWeekRetention = orderEvent.slice(thisWeek, orderEvent.length).map((val: any) =>{
+    let count = 0;
+    weekUsers[thisWeek].users.forEach((id:string)=>{
+      if(val.events.some((event:Event)=>event.distinct_user_id === id)){
+        count++;
+      }
+    })
+    return Math.round(count*100/weekUsers[thisWeek].users.length);
+  });
+  resultArr[thisWeek].weeklyRetention = thisWeekRetention;
+  console.log(thisWeek,thisWeekRetention)
+}
+
+
+
+  res.send(resultArr);
 });
 
 router.get("/:eventId", (req: Request, res: Response) => {
@@ -155,24 +208,59 @@ router.get("/:eventId", (req: Request, res: Response) => {
 });
 
 router.post("/", (req: Request, res: Response) => {
-  const addEvent = createEvent(req.body)
+  const addEvent = createEvent(req.body);
   res.send(addEvent);
 });
 
 router.get("/chart/os/:time", (req: Request, res: Response) => {
-  res.send("/chart/os/:time");
+  const time = req.params.time;
+  if(time === 'all'){
+    return res.send(getAllEvents())
+  }else if(time === 'today'){
+    return res.send(getTodayEvents())
+  }else if(time === 'week'){
+    return res.send(getThisWeekEvents())
+  }else{
+    return res.sendStatus(404).send('bad request');
+  }
 });
 
 router.get("/chart/pageview/:time", (req: Request, res: Response) => {
-  res.send("/chart/pageview/:time");
+  const time = req.params.time;
+  if(time === 'all'){
+    return res.send(getAllEvents())
+  }else if(time === 'today'){
+    return res.send(getTodayEvents())
+  }else if(time === 'week'){
+    return res.send(getThisWeekEvents())
+  }else{
+    return res.sendStatus(404).send('bad request');
+  }
 });
 
 router.get("/chart/timeonurl/:time", (req: Request, res: Response) => {
-  res.send("/chart/timeonurl/:time");
+  const time = req.params.time;
+  if(time === 'all'){
+    return res.send(getAllEvents())
+  }else if(time === 'today'){
+    return res.send(getTodayEvents())
+  }else if(time === 'week'){
+    return res.send(getThisWeekEvents())
+  }else{
+    return res.sendStatus(404).send('bad request');
+  }
 });
 
 router.get("/chart/geolocation/:time", (req: Request, res: Response) => {
-  res.send("/chart/geolocation/:time");
+  const time = req.params.time;
+  if(time === 'all'){
+    return res.send(getAllEvents())
+  }else if(time === 'today'){
+    return res.send(getTodayEvents())
+  }else if(time === 'week'){
+    return res.send(getThisWeekEvents())
+  }else{
+    return res.sendStatus(404).send('bad request');
+  }
 });
-
 export default router;

@@ -264,7 +264,8 @@ export const getEventFromDayZero = (dayZero: number) => {
   const result = db
     .get(EVENT_TABLE)
     .filter((event) => dayZero < event.date)
-    .sortBy((event) => event.date)
+    .orderBy((event) => event.date)
+    .groupBy(event => moment(event.date).week())
     .value();
   return result;
 };

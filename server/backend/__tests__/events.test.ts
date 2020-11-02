@@ -46,8 +46,7 @@ describe("main test", () => {
   });
 
   it("can get unique sessions count by day", async () => {
-    const { body: sessionsByDays } = await request(app).get("/events/by-days/0").expect(200);
-console.log(sessionsByDays);
+    const { body: sessionsByDays } = await request(app).get("/events/by-days/0").expect(200)
 
     expect(sessionsByDays.length).toBe(7)
     expect(sessionsByDays.reduce((sum: number, day: {date: string; count: number}) => sum += day.count, 0)).toBe(145
@@ -83,15 +82,18 @@ console.log(sessionsByDays);
       `/events/retention?dayZero=${dayZero}`
     ).expect(200);
     
-    // console.log(retentionData)
+    console.log(retentionData)
 
     expect(retentionData.length).toBe(6);
-    
-    expect(retentionData[0].weeklyRetention).toEqual([ 100, 40, 60, 90, 80, 0 ]);
+
+    expect(retentionData[0].newUsers).toBe(10);
+    expect(retentionData[0].weeklyRetention).toEqual([ 100, 30, 60, 90, 80, 0 ]);
+    expect(retentionData[1].newUsers).toBe(10);
     expect(retentionData[1].weeklyRetention).toEqual([ 100, 90, 60,100,0 ]);
+    expect(retentionData[2].newUsers).toBe(11);
     expect(retentionData[2].weeklyRetention).toEqual([ 100, 100, 82, 9 ]);
     expect(retentionData[4].newUsers).toBe(9);
-
+    expect(retentionData[4].weeklyRetention).toEqual([ 100, 44 ]);
 
   });
   it("can filter events by browser", async () => {
@@ -114,7 +116,6 @@ console.log(sessionsByDays);
       offset: 5,
       search: "100"
     })
-    
     .expect(200);
     expect(events.events.length).toBe(2);
     expect(events.events[0].session_id).toMatch(/100/i)
@@ -128,7 +129,6 @@ console.log(sessionsByDays);
       sorting: "-date"
     })
     .expect(200);
-    
     const { body: events2}  = await request(app).get("/events/all-filtered")
     .query({
       offset: 5,
