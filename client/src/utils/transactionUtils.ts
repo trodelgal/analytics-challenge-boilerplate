@@ -185,8 +185,10 @@ export const getPaginatedItems = (page: number, limit: number, items: any) => {
 // https://github.com/date-fns/date-fns/issues/376#issuecomment-544274031
 // not used in application code
 /* istanbul ignore next */
-export const startOfDayUTC = (date: Date) => new Date(new Date(date).setUTCHours(0, 0, 0, 0));
+export const startOfDayUTC = (date: Date) => new Date(new Date(date).setUTCHours(-2, 0, 0, 0));
+export const startOfWeekUTC = (date: Date) => new Date(new Date(date).setUTCHours(-171, 0, 0, 0));
+export const endOfWeekUTC = (date: Date) => new Date(new Date(date).setUTCHours(189, 59, 59, 999));
 
 // not used in application code
 /* istanbul ignore next */
-export const endOfDayUTC = (date: Date) => new Date(new Date(date).setUTCHours(23, 59, 59, 999));
+export const endOfDayUTC = (date: Date) => new Date(new Date(date).setUTCHours(21, 59, 59, 999));

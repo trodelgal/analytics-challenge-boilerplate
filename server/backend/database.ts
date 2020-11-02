@@ -1,5 +1,6 @@
 import path from "path";
 import bcrypt from "bcryptjs";
+import moment from "moment";
 import fs from "fs";
 import { v4 } from "uuid";
 import {
@@ -49,7 +50,8 @@ import {
   NotificationResponseItem,
   TransactionQueryPayload,
   DefaultPrivacyLevel,
-  Event
+  Event,
+  RetentionCohort,
 } from "../../client/src/models";
 import Fuse from "fuse.js";
 import {
@@ -67,9 +69,12 @@ import {
   formatFullName,
   isLikeNotification,
   isCommentNotification,
+  startOfDayUTC,
+  endOfDayUTC,
+  startOfWeekUTC,
+  endOfWeekUTC,
 } from "../../client/src/utils/transactionUtils";
 import { DbSchema } from "../../client/src/models/db-schema";
-
 
 export type TDatabase = {
   users: User[];
@@ -107,7 +112,6 @@ export const seedDatabase = () => {
   db.setState(testSeed).write();
   return;
 };
-
 
 export const getAllUsers = () => db.get(USER_TABLE).value();
 
@@ -179,9 +183,137 @@ export const removeUserFromResults = (userId: User["id"], results: User[]) =>
 
 // Events
 export const getEventBy = (key: string, value: any) => getBy(EVENT_TABLE, key, value);
+// const oneDay:number = 1*24*60*60*1000;
 // All events
 export const getAllEvents = () => db.get(EVENT_TABLE).value();
 export const getEventById = (id: string) => getEventBy("_id", id);
+export const getTodayEvents = () => {
+  const startOfTheDate = startOfDayUTC(new Date());
+  const result = db
+    .get(EVENT_TABLE)
+    // @ts-ignore
+    .filter((event) => startOfTheDate < event.date)
+    .value();
+  return result;
+};
+
+export const getThisWeekEvents = () => {
+  const startOfTheWeek = startOfWeekUTC(new Date());
+  const result = db
+    .get(EVENT_TABLE)
+    // @ts-ignore
+    .filter((event) => startOfTheWeek < event.date)
+    .sortBy((event) => event.date)
+    .value();
+  return result;
+};
+
+export const getByDaysEvents = (offset: number) => {
+  const endOfTheDate = endOfDayUTC(new Date()).getTime();
+  const offsetToTime = offset * 24 * 60 * 60 * 1000;
+  const lastWeekFrom = new Date(endOfTheDate - offsetToTime);
+  const oneWeekBack = startOfWeekUTC(lastWeekFrom);
+
+  const result = db
+    .get(EVENT_TABLE)
+    // @ts-ignore
+    .filter((event) => oneWeekBack < event.date && lastWeekFrom > event.date)
+    .sortBy((event) => event.date)
+    .groupBy((event) => new Date(event.date).getDay())
+    .value();
+
+  return result;
+};
+
+export const getByHoursEvents = (offset: number) => {
+  const endOfTheDay = endOfDayUTC(new Date()).getTime();
+  const startOfTheDay = startOfDayUTC(new Date()).getTime();
+  const offsetToTime = offset * 24 * 60 * 60 * 1000;
+  const result = db
+    .get(EVENT_TABLE)
+    // @ts-ignore
+    .filter(
+      (event) =>
+        startOfTheDay - offsetToTime < event.date && endOfTheDay - offsetToTime > event.date
+    )
+    .sortBy((event) => event.date)
+    .groupBy((event) => new Date(event.date).getHours())
+    .value();
+
+  return result;
+};
+
+export const getEventFromDayZero = (dayZero: number) => {
+  const result = db
+    .get(EVENT_TABLE)
+    .filter((event) => dayZero < event.date)
+    .sortBy((event) => event.date)
+    .value();
+  return result;
+};
+
+export const getEventFiltered = (opt: RetentionCohort) => {
+  if(opt.sorting === "+date"){
+    if(opt.type && opt.browser){
+      const result = db
+        .get(EVENT_TABLE)
+        .filter((e) => e.name === opt.type && e.browser === opt.browser
+        )
+        .orderBy((e) => [e.date], ["asc"])
+        .value();
+        return result;
+    }else if(opt.type){
+      const result = db
+      .get(EVENT_TABLE)
+      .filter((e) => e.name === opt.type)
+      .orderBy((e) => [e.date], ["asc"])
+      .value();
+      return result;
+    }else if(opt.browser){
+      const result = db
+      .get(EVENT_TABLE)
+      .filter((e) =>  e.browser === opt.browser)
+      .orderBy((e) => [e.date], ["asc"])
+      .value();
+      return result;
+    }else{
+      const result = db
+      .get(EVENT_TABLE)
+      .orderBy((e) => [e.date], ["asc"])
+      .value();
+      return result;
+    }
+  }else{
+    if(opt.type && opt.browser){
+      const result = db
+      .get(EVENT_TABLE)
+      .filter((e) => e.name === opt.type && e.browser === opt.browser)
+      .orderBy((e) => [e.date], ["desc"])
+      .value();
+      return result;
+    }else if(opt.type){
+      const result = db
+      .get(EVENT_TABLE)
+      .filter((e) => e.name === opt.type)
+      .orderBy((e) => [e.date], ["desc"])
+      .value();
+      return result;
+    }else if(opt.browser){
+      const result = db
+      .get(EVENT_TABLE)
+      .filter((e) =>  e.browser === opt.browser)
+      .orderBy((e) => [e.date], ["desc"])
+      .value();
+      return result;
+    }else{
+      const result = db
+      .get(EVENT_TABLE)
+      .orderBy((e) => [e.date], ["desc"])
+      .value();
+      return result;
+    }
+  }
+};
 
 // User
 export const getUserBy = (key: string, value: any) => getBy(USER_TABLE, key, value);
@@ -869,6 +1001,5 @@ export const getTransactionsBy = (key: string, value: string) =>
 
 /* istanbul ignore next */
 export const getTransactionsByUserId = (userId: string) => getTransactionsBy("receiverId", userId);
-
 
 export default db;

@@ -82,7 +82,7 @@ describe("main test", () => {
       `/events/retention?dayZero=${dayZero}`
     ).expect(200);
     
-    console.log(retentionData)
+    // console.log(retentionData)
 
     expect(retentionData.length).toBe(6);
     
@@ -113,6 +113,7 @@ describe("main test", () => {
       offset: 5,
       search: "100"
     })
+    
     .expect(200);
     expect(events.events.length).toBe(2);
     expect(events.events[0].session_id).toMatch(/100/i)
@@ -126,12 +127,15 @@ describe("main test", () => {
       sorting: "-date"
     })
     .expect(200);
+    console.log(events);
+    
     const { body: events2}  = await request(app).get("/events/all-filtered")
     .query({
       offset: 5,
       sorting: "+date"
     })
     .expect(200);
+    console.log(events2);
     expect(events.events[0].date).toBeGreaterThan(events2.events[0].date)
     expect(events.events[0].date).toBeGreaterThan(events.events[4].date)
     expect(events2.events[1].date).toBeGreaterThan(events2.events[0].date)

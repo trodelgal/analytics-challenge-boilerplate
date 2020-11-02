@@ -29,10 +29,11 @@ export type Location = {
   lat: number;
   lng: number;
 };
+export type sorting = "+date" | "-date";
 export interface RetentionCohort {
-  sorting: string;
-  type: string;
-  browser: string;
-  search: string;
-  offset: number;
+  sorting?: string;
+  type?: string;
+  browser?: string;
+  search?: string;
+  offset?: number;
 }
