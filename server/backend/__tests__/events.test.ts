@@ -46,7 +46,8 @@ describe("main test", () => {
   });
 
   it("can get unique sessions count by day", async () => {
-    const { body: sessionsByDays } = await request(app).get("/events/by-days/0").expect(200)
+    const { body: sessionsByDays } = await request(app).get("/events/by-days/0").expect(200);
+console.log(sessionsByDays);
 
     expect(sessionsByDays.length).toBe(7)
     expect(sessionsByDays.reduce((sum: number, day: {date: string; count: number}) => sum += day.count, 0)).toBe(145
@@ -127,7 +128,6 @@ describe("main test", () => {
       sorting: "-date"
     })
     .expect(200);
-    console.log(events);
     
     const { body: events2}  = await request(app).get("/events/all-filtered")
     .query({
@@ -135,7 +135,6 @@ describe("main test", () => {
       sorting: "+date"
     })
     .expect(200);
-    console.log(events2);
     expect(events.events[0].date).toBeGreaterThan(events2.events[0].date)
     expect(events.events[0].date).toBeGreaterThan(events.events[4].date)
     expect(events2.events[1].date).toBeGreaterThan(events2.events[0].date)

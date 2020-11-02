@@ -3,7 +3,7 @@
 import express from "express";
 import { Request, Response } from "express";
 
-import { Event, weeklyRetentionObject, RetentionCohort } from "../../client/src/models/event";
+import { Event, weeklyRetentionObject, RetentionCohort, Filter, DaysEvents, HoursEvents } from "../../client/src/models/event";
 import { ensureAuthenticated, validateMiddleware } from "./helpers";
 
 import {
@@ -21,6 +21,7 @@ import {
   getByHoursEvents,
   getEventFromDayZero,
   getEventFiltered,
+  createEvent
 } from "./database";
 import {
   startOfDayUTC,
@@ -32,13 +33,7 @@ const router = express.Router();
 
 // Routes
 
-interface Filter {
-  sorting: string;
-  type: string;
-  browser: string;
-  search: string;
-  offset: number;
-}
+
 
 router.get("/all", (req: Request, res: Response) => {
   const events: Event[] = getAllEvents();
@@ -69,7 +64,7 @@ router.get("/all-filtered", (req: Request, res: Response) => {
         searchEvents.push(event);
       }
     });
-    if (searchEvents.length > filters.offset) {
+    if ( filters.offset && searchEvents.length > filters.offset) {
       const offsetEvents = searchEvents.slice(0, filters.offset);
       const results = {
         events: offsetEvents,
@@ -89,7 +84,7 @@ router.get("/by-days/:offset", (req: Request, res: Response) => {
   let { offset } = req.params;
   const events = getByDaysEvents(parseInt(offset));
 
-  let resultsArr: object[] = [];
+  let resultsArr: DaysEvents[] = [];
   for (let key in events) {
     let counter: string[] = [];
     events[key].map((dayEvent) => {
@@ -97,16 +92,17 @@ router.get("/by-days/:offset", (req: Request, res: Response) => {
         counter.push(dayEvent.session_id);
       }
     });
-    const date = new Date(events[key][0].date).toString().slice(0, 10);
+    const date = new Date(events[key][0].date);
     resultsArr.push({ date: date, count: counter.length });
   }
+  resultsArr.sort((a:DaysEvents,b:DaysEvents)=> a.date.getTime() - b.date.getTime());
   res.send(resultsArr);
 });
 
 router.get("/by-hours/:offset", (req: Request, res: Response) => {
   let { offset } = req.params;
   const events = getByHoursEvents(parseInt(offset));
-  let resultsArr: any[] = [];
+  let resultsArr: HoursEvents[] = [];
   for (let i = 0; i < 24; i++) {
     resultsArr.push({ hour: i, count: 0 });
   }
@@ -159,7 +155,8 @@ router.get("/:eventId", (req: Request, res: Response) => {
 });
 
 router.post("/", (req: Request, res: Response) => {
-  res.send("/");
+  const addEvent = createEvent(req.body)
+  res.send(addEvent);
 });
 
 router.get("/chart/os/:time", (req: Request, res: Response) => {

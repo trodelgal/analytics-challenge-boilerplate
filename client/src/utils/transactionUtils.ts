@@ -186,7 +186,7 @@ export const getPaginatedItems = (page: number, limit: number, items: any) => {
 // not used in application code
 /* istanbul ignore next */
 export const startOfDayUTC = (date: Date) => new Date(new Date(date).setUTCHours(-2, 0, 0, 0));
-export const startOfWeekUTC = (date: Date) => new Date(new Date(date).setUTCHours(-171, 0, 0, 0));
+export const startOfWeekUTC = (date: Date) => new Date(new Date(date).setUTCHours(-146, 0, 0, 0));
 export const endOfWeekUTC = (date: Date) => new Date(new Date(date).setUTCHours(189, 59, 59, 999));
 
 // not used in application code

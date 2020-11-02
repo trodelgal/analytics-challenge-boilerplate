@@ -10,6 +10,14 @@ export interface Event {
   geolocation: GeoLocation;
 }
 
+export interface Filter {
+  sorting?: string;
+  type?: string;
+  browser?: string;
+  search?: string;
+  offset?: number;
+}
+
 export interface weeklyRetentionObject {
   registrationWeek:number;
   newUsers:number;
@@ -30,10 +38,20 @@ export type Location = {
   lng: number;
 };
 export type sorting = "+date" | "-date";
+
 export interface RetentionCohort {
   sorting?: string;
   type?: string;
   browser?: string;
   search?: string;
   offset?: number;
+}
+
+export interface DaysEvents {
+  date: Date ,
+  count: number
+}
+export interface HoursEvents {
+  hour: string,
+  count: number
 }

@@ -52,6 +52,7 @@ import {
   DefaultPrivacyLevel,
   Event,
   RetentionCohort,
+  Filter
 } from "../../client/src/models";
 import Fuse from "fuse.js";
 import {
@@ -181,32 +182,45 @@ export const removeUserFromResults = (userId: User["id"], results: User[]) =>
 
 // convenience methods
 
-// Events
+// EVENT
+
 export const getEventBy = (key: string, value: any) => getBy(EVENT_TABLE, key, value);
-// const oneDay:number = 1*24*60*60*1000;
-// All events
+
+//Get All events
+
 export const getAllEvents = () => db.get(EVENT_TABLE).value();
 export const getEventById = (id: string) => getEventBy("_id", id);
+
+// This Day Events
+
 export const getTodayEvents = () => {
   const startOfTheDate = startOfDayUTC(new Date());
+
   const result = db
     .get(EVENT_TABLE)
     // @ts-ignore
     .filter((event) => startOfTheDate < event.date)
     .value();
+
   return result;
 };
 
+// This Week Event
+
 export const getThisWeekEvents = () => {
   const startOfTheWeek = startOfWeekUTC(new Date());
+
   const result = db
     .get(EVENT_TABLE)
     // @ts-ignore
     .filter((event) => startOfTheWeek < event.date)
     .sortBy((event) => event.date)
     .value();
+
   return result;
 };
+
+// This Week By Day Events
 
 export const getByDaysEvents = (offset: number) => {
   const endOfTheDate = endOfDayUTC(new Date()).getTime();
@@ -218,12 +232,13 @@ export const getByDaysEvents = (offset: number) => {
     .get(EVENT_TABLE)
     // @ts-ignore
     .filter((event) => oneWeekBack < event.date && lastWeekFrom > event.date)
-    .sortBy((event) => event.date)
     .groupBy((event) => new Date(event.date).getDay())
     .value();
 
   return result;
 };
+
+// This Day By Hour Event
 
 export const getByHoursEvents = (offset: number) => {
   const endOfTheDay = endOfDayUTC(new Date()).getTime();
@@ -243,6 +258,8 @@ export const getByHoursEvents = (offset: number) => {
   return result;
 };
 
+// Retention Events
+
 export const getEventFromDayZero = (dayZero: number) => {
   const result = db
     .get(EVENT_TABLE)
@@ -252,67 +269,75 @@ export const getEventFromDayZero = (dayZero: number) => {
   return result;
 };
 
-export const getEventFiltered = (opt: RetentionCohort) => {
-  if(opt.sorting === "+date"){
-    if(opt.type && opt.browser){
+// Fillter Events
+
+export const getEventFiltered = (opt: Filter) => {
+  if (opt.sorting === "+date") {
+    if (opt.type && opt.browser) {
       const result = db
         .get(EVENT_TABLE)
-        .filter((e) => e.name === opt.type && e.browser === opt.browser
-        )
+        .filter((e) => e.name === opt.type && e.browser === opt.browser)
         .orderBy((e) => [e.date], ["asc"])
         .value();
-        return result;
-    }else if(opt.type){
-      const result = db
-      .get(EVENT_TABLE)
-      .filter((e) => e.name === opt.type)
-      .orderBy((e) => [e.date], ["asc"])
-      .value();
       return result;
-    }else if(opt.browser){
+    } else if (opt.type) {
       const result = db
-      .get(EVENT_TABLE)
-      .filter((e) =>  e.browser === opt.browser)
-      .orderBy((e) => [e.date], ["asc"])
-      .value();
+        .get(EVENT_TABLE)
+        .filter((e) => e.name === opt.type)
+        .orderBy((e) => [e.date], ["asc"])
+        .value();
       return result;
-    }else{
+    } else if (opt.browser) {
       const result = db
-      .get(EVENT_TABLE)
-      .orderBy((e) => [e.date], ["asc"])
-      .value();
+        .get(EVENT_TABLE)
+        .filter((e) => e.browser === opt.browser)
+        .orderBy((e) => [e.date], ["asc"])
+        .value();
+      return result;
+    } else {
+      const result = db
+        .get(EVENT_TABLE)
+        .orderBy((e) => [e.date], ["asc"])
+        .value();
       return result;
     }
-  }else{
-    if(opt.type && opt.browser){
+  } else {
+    if (opt.type && opt.browser) {
       const result = db
-      .get(EVENT_TABLE)
-      .filter((e) => e.name === opt.type && e.browser === opt.browser)
-      .orderBy((e) => [e.date], ["desc"])
-      .value();
+        .get(EVENT_TABLE)
+        .filter((e) => e.name === opt.type && e.browser === opt.browser)
+        .orderBy((e) => [e.date], ["desc"])
+        .value();
       return result;
-    }else if(opt.type){
+    } else if (opt.type) {
       const result = db
-      .get(EVENT_TABLE)
-      .filter((e) => e.name === opt.type)
-      .orderBy((e) => [e.date], ["desc"])
-      .value();
+        .get(EVENT_TABLE)
+        .filter((e) => e.name === opt.type)
+        .orderBy((e) => [e.date], ["desc"])
+        .value();
       return result;
-    }else if(opt.browser){
+    } else if (opt.browser) {
       const result = db
-      .get(EVENT_TABLE)
-      .filter((e) =>  e.browser === opt.browser)
-      .orderBy((e) => [e.date], ["desc"])
-      .value();
+        .get(EVENT_TABLE)
+        .filter((e) => e.browser === opt.browser)
+        .orderBy((e) => [e.date], ["desc"])
+        .value();
       return result;
-    }else{
+    } else {
       const result = db
-      .get(EVENT_TABLE)
-      .orderBy((e) => [e.date], ["desc"])
-      .value();
+        .get(EVENT_TABLE)
+        .orderBy((e) => [e.date], ["desc"])
+        .value();
       return result;
     }
   }
+};
+
+// Add New Event
+
+export const createEvent = (eventDetails: Event): string => {
+  db.get(EVENT_TABLE).push(eventDetails).write();
+  return "event created";
 };
 
 // User
