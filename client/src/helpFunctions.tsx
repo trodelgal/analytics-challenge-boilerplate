@@ -2,7 +2,7 @@ export function getDayString(dateNow: number): string {
   let year = new Date(dateNow).getFullYear();
   let day = new Date(dateNow).getDate();
   let month = new Date(dateNow).getMonth() + 1;
-  return `${year}-${month}-${day}`;
+  return `${year}/${month}/${day}`;
 }
 
 export const OneHour: number = 1000 * 60 * 60;

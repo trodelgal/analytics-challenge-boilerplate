@@ -15,7 +15,7 @@ import axios from "axios";
 import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
 
 const WeekSessions: React.FC = () => {
-  const [weekSessionsData, setWeekSessionsData] = useState<DaysEvents[]>([]);
+  const [weekSessionsData, setWeekSessionsData] = useState<DaysEvents[]>();
   const [offset, setOffset] = useState<number>(0);
 
   const fetchWeekSessionsDate = async () => {
@@ -33,26 +33,20 @@ const WeekSessions: React.FC = () => {
     fetchWeekSessionsDate();
   }, [offset]);
 
-  function handleDateChange(e: string) {
-    console.log("e", e);
-
-    if (e.split("-").length === 3) {
-      console.log(new Date(e));
+  function handleDateChange(date: string) {
       const newOffset: number = Math.round(
-        (getStartOfDayTime(Date.now()) - getStartOfDayTime(new Date(e).getTime())) / OneDay
+        (getStartOfDayTime(Date.now()) - getStartOfDayTime(new Date(date).getTime())) / OneDay
       );
-      console.log(newOffset);
-      if (newOffset > 0) {
+      if (newOffset >= 0) {
         setOffset(newOffset);
       }
-    }
   }
 
   return (
     <div className="byDaySessions">
       <>
-        {weekSessionsData[6] ? (
-          <h2>{`Sessions each day between: ${weekSessionsData[0].date} - ${weekSessionsData[6].date}`}</h2>
+        {(weekSessionsData && weekSessionsData[1]) ? (
+          <h2>{`Sessions each day between: ${weekSessionsData[0].date} - ${weekSessionsData[weekSessionsData.length - 1].date}`}</h2>
         ) : (
           <h2>There is not events on this dates</h2>
         )}
@@ -66,7 +60,6 @@ const WeekSessions: React.FC = () => {
             shrink: true,
           }}
         />
-        {weekSessionsData[6] && (
           <LineChart width={500} height={300} data={weekSessionsData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
@@ -75,7 +68,6 @@ const WeekSessions: React.FC = () => {
             <Legend />
             <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
           </LineChart>
-        )}
       </>
     </div>
   );
