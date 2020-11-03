@@ -48,7 +48,7 @@ export interface RetentionCohort {
 }
 
 export interface DaysEvents {
-  date: Date ,
+  date: string;
   count: number
 }
 export interface HoursEvents {

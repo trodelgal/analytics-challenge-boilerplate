@@ -1,6 +1,5 @@
 import path from "path";
 import bcrypt from "bcryptjs";
-import moment from "moment";
 import fs from "fs";
 import { v4 } from "uuid";
 import {
@@ -52,7 +51,9 @@ import {
   DefaultPrivacyLevel,
   Event,
   RetentionCohort,
-  Filter
+  Filter,
+  eventName,
+  browser
 } from "../../client/src/models";
 import Fuse from "fuse.js";
 import {
@@ -70,10 +71,6 @@ import {
   formatFullName,
   isLikeNotification,
   isCommentNotification,
-  startOfDayUTC,
-  endOfDayUTC,
-  startOfWeekUTC,
-  endOfWeekUTC,
 } from "../../client/src/utils/transactionUtils";
 import { DbSchema } from "../../client/src/models/db-schema";
 
@@ -182,6 +179,32 @@ export const removeUserFromResults = (userId: User["id"], results: User[]) =>
 
 // convenience methods
 
+const OneHour: number = 1000 * 60 * 60;
+const OneDay: number = OneHour * 24;
+const OneWeek: number = OneDay * 7;
+
+export function getDayString(dateNow:number): string{
+  let year = new Date(dateNow).getFullYear()
+  let day = new Date(dateNow).getDate()
+  let month = new Date(dateNow).getMonth() +1;
+  return `${year}/${month}/${day}`;
+}
+
+export const getStartOfDayTime = (dateNow:number): number=>{
+  const date = getDayString(dateNow)
+  const startOfDay = new Date(date);
+  return startOfDay.getTime();
+}
+
+export const getEndOfDayTime = (time: number):number => {
+  const endOfDay = getStartOfDayTime(time)+OneDay;
+  return endOfDay
+};
+export const getOStartOfWeekTime = (time: number):number => {
+  const startOfWeek = getEndOfDayTime(time)- OneWeek;
+  return startOfWeek
+};
+
 // EVENT
 
 export const getEventBy = (key: string, value: any) => getBy(EVENT_TABLE, key, value);
@@ -191,48 +214,51 @@ export const getEventBy = (key: string, value: any) => getBy(EVENT_TABLE, key, v
 export const getAllEvents = () => db.get(EVENT_TABLE).value();
 export const getEventById = (id: string) => getEventBy("_id", id);
 
-// This Day Events
+export const todayEvents = ():Event[]=>{
+  const startOfTheDate = getStartOfDayTime(Date.now());
+    const events: Event[] = getAllEvents();
+    const todeyEvents = events.filter((event) => startOfTheDate < event.date)
+    return todeyEvents
+}
 
-export const getTodayEvents = () => {
-  const startOfTheDate = startOfDayUTC(new Date());
+export const thisWeekEvents = ():Event[]=>{
+  const startOfTheWeek = getOStartOfWeekTime(Date.now())
+  const events: Event[] = getAllEvents();
+  const thisWeekEvent = events.filter((event) => startOfTheWeek < event.date)
+    return thisWeekEvent
+}
 
-  const result = db
-    .get(EVENT_TABLE)
-    // @ts-ignore
-    .filter((event) => startOfTheDate < event.date)
-    .value();
-
-  return result;
+export const getEventByType = (name: eventName, events?: Event[]) => {
+  if (events) {
+    return events.filter((event: Event) => {
+      return event.name === name;
+    });
+  }
+  return getEventBy("name", name);
 };
 
-// This Week Event
-
-export const getThisWeekEvents = () => {
-  const startOfTheWeek = startOfWeekUTC(new Date());
-
-  const result = db
-    .get(EVENT_TABLE)
-    // @ts-ignore
-    .filter((event) => startOfTheWeek < event.date)
-    .sortBy((event) => event.date)
-    .value();
-
-  return result;
+export const getEventByBrowser = (browser: browser, events?: Event[]) => {
+  if (events) {
+    return events.filter((event: Event) => {
+      return event.browser === browser;
+    });
+  }
+  return getEventBy("browser", browser);
 };
 
 // This Week By Day Events
 
-export const getByDaysEvents = (offset: number) => {
-  const endOfTheDate = endOfDayUTC(new Date()).getTime();
-  const offsetToTime = offset * 24 * 60 * 60 * 1000;
-  const lastWeekFrom = new Date(endOfTheDate - offsetToTime);
-  const oneWeekBack = startOfWeekUTC(lastWeekFrom);
+export const getWeekEventGroupByDays = (offset: number) => {
+  const endOfTheDate = getEndOfDayTime(Date.now());
+  const offsetToTime = offset * OneDay;
+  const endOfWeek = endOfTheDate - offsetToTime;
+  const startOfWeek = endOfWeek - OneWeek;
 
   const result = db
     .get(EVENT_TABLE)
     // @ts-ignore
-    .filter((event) => oneWeekBack < event.date && lastWeekFrom > event.date)
-    .groupBy((event) => new Date(event.date).getDay())
+    .filter((event) => startOfWeek < event.date && endOfWeek > event.date)
+    .groupBy((event) => getDayString(event.date))
     .value();
 
   return result;
@@ -240,10 +266,10 @@ export const getByDaysEvents = (offset: number) => {
 
 // This Day By Hour Event
 
-export const getByHoursEvents = (offset: number) => {
-  const endOfTheDay = endOfDayUTC(new Date()).getTime();
-  const startOfTheDay = startOfDayUTC(new Date()).getTime();
-  const offsetToTime = offset * 24 * 60 * 60 * 1000;
+export const getDayEventsGroupByHours = (offset: number) => {
+  const endOfTheDay = getEndOfDayTime(Date.now());
+  const startOfTheDay = getStartOfDayTime(Date.now());
+  const offsetToTime = offset * OneDay;
   const result = db
     .get(EVENT_TABLE)
     // @ts-ignore
@@ -258,17 +284,6 @@ export const getByHoursEvents = (offset: number) => {
   return result;
 };
 
-// Retention Events
-
-export const getEventFromDayZero = (dayZero: number) => {
-  const result = db
-    .get(EVENT_TABLE)
-    .filter((event) => dayZero < event.date)
-    .orderBy((event) => event.date)
-    .groupBy(event => moment(event.date).week())
-    .value();
-  return result;
-};
 
 // Fillter Events
 

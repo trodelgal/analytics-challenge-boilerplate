@@ -77,12 +77,14 @@ describe("main test", () => {
   it("retention cohort", async () => {
     const today = new Date (new Date().toDateString()).getTime()+6*OneHour
     const dayZero = today-5*OneWeek
+    // console.log("dayZero",dayZero);
+    
 
     const { body: retentionData } = await request(app).get(
       `/events/retention?dayZero=${dayZero}`
     ).expect(200);
     
-    console.log(retentionData)
+    // console.log(retentionData)
 
     expect(retentionData.length).toBe(6);
 
