@@ -15,17 +15,20 @@ import ListItemText from "@material-ui/core/ListItemText";
 import HomeIcon from "@material-ui/icons/Home";
 import PersonIcon from "@material-ui/icons/Person";
 import LogoutIcon from "@material-ui/icons/ExitToApp";
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import { Grid, Avatar, Typography } from "@material-ui/core";
 import { formatAmount } from "../utils/transactionUtils";
 import { AuthMachineContext, AuthMachineEvents } from "../machines/authMachine";
+import { User, DefaultPrivacyLevel, UserSettingsPayload } from "../models";
 
 const drawerWidth = 240;
 
 export const mainListItems = (
   toggleDrawer: ((event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void) | undefined,
-  showTemporaryDrawer: Boolean
+  showTemporaryDrawer: Boolean,
+  currentUser: User
 ) => (
   <div>
     <ListItem
@@ -80,6 +83,21 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Notifications" />
     </ListItem>
+    {(currentUser.isAdmin) &&
+    <ListItem
+      button
+      // @ts-ignore
+      onClick={() => showTemporaryDrawer && toggleDrawer()}
+      component={RouterLink}
+      to="/admin" 
+      data-test="sidenav-bankaccounts"
+    >
+      <ListItemIcon>
+        <SupervisorAccountIcon />
+      </ListItemIcon>
+      <ListItemText primary="Admin Dashboard" />
+    </ListItem>
+    }
   </div>
 );
 
@@ -249,9 +267,11 @@ const NavDrawer: React.FC<Props> = ({
         <Grid item>
           <Divider />
         </Grid>
+        {currentUser && 
         <Grid item>
-          <List>{mainListItems(toggleDrawer, showTemporaryDrawer)}</List>
+          <List>{mainListItems(toggleDrawer, showTemporaryDrawer, currentUser)}</List>
         </Grid>
+        }
         <Grid item>
           <Divider />
         </Grid>

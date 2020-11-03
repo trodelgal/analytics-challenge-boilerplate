@@ -17864,6 +17864,7 @@
       "avatar": "https://avatars.dicebear.com/api/human/n9i5RjJ8a.svg",
       "defaultPrivacyLevel": "contacts",
       "balance": 46533,
+      "isAdmin":true,
       "createdAt": "2020-10-06T13:15:13.053Z",
       "modifiedAt": "2020-10-29T14:35:33.617Z"
     },
