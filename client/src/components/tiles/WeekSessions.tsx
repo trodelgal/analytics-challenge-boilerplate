@@ -66,7 +66,7 @@ const WeekSessions: React.FC = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="count" stroke="#8884d8" name="Sessions" activeDot={{ r: 6 }} />
           </LineChart>
       </>
     </div>

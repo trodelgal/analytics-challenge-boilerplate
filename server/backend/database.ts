@@ -50,7 +50,6 @@ import {
   TransactionQueryPayload,
   DefaultPrivacyLevel,
   Event,
-  RetentionCohort,
   Filter,
   eventName,
   browser
@@ -234,7 +233,9 @@ export const getEventByType = (name: eventName, events?: Event[]) => {
       return event.name === name;
     });
   }
-  return getEventBy("name", name);
+  const allEvents = getAllEvents()
+  const typeEvents = allEvents.filter((event: Event) => event.name === name)
+  return typeEvents
 };
 
 export const getEventByBrowser = (browser: browser, events?: Event[]) => {
@@ -243,7 +244,9 @@ export const getEventByBrowser = (browser: browser, events?: Event[]) => {
       return event.browser === browser;
     });
   }
-  return getEventBy("browser", browser);
+  const allEvents = getAllEvents()
+  const browserEvents = allEvents.filter((event: Event) => event.browser === browser)
+  return browserEvents
 };
 
 // This Week By Day Events
@@ -288,64 +291,21 @@ export const getDayEventsGroupByHours = (offset: number) => {
 // Fillter Events
 
 export const getEventFiltered = (opt: Filter) => {
-  if (opt.sorting === "+date") {
     if (opt.type && opt.browser) {
       const result = db
         .get(EVENT_TABLE)
         .filter((e) => e.name === opt.type && e.browser === opt.browser)
-        .orderBy((e) => [e.date], ["asc"])
         .value();
       return result;
     } else if (opt.type) {
-      const result = db
-        .get(EVENT_TABLE)
-        .filter((e) => e.name === opt.type)
-        .orderBy((e) => [e.date], ["asc"])
-        .value();
+      const result = getEventByType(opt.type)
       return result;
     } else if (opt.browser) {
-      const result = db
-        .get(EVENT_TABLE)
-        .filter((e) => e.browser === opt.browser)
-        .orderBy((e) => [e.date], ["asc"])
-        .value();
+      const result = getEventByBrowser(opt.browser)
       return result;
-    } else {
-      const result = db
-        .get(EVENT_TABLE)
-        .orderBy((e) => [e.date], ["asc"])
-        .value();
-      return result;
-    }
-  } else {
-    if (opt.type && opt.browser) {
-      const result = db
-        .get(EVENT_TABLE)
-        .filter((e) => e.name === opt.type && e.browser === opt.browser)
-        .orderBy((e) => [e.date], ["desc"])
-        .value();
-      return result;
-    } else if (opt.type) {
-      const result = db
-        .get(EVENT_TABLE)
-        .filter((e) => e.name === opt.type)
-        .orderBy((e) => [e.date], ["desc"])
-        .value();
-      return result;
-    } else if (opt.browser) {
-      const result = db
-        .get(EVENT_TABLE)
-        .filter((e) => e.browser === opt.browser)
-        .orderBy((e) => [e.date], ["desc"])
-        .value();
-      return result;
-    } else {
-      const result = db
-        .get(EVENT_TABLE)
-        .orderBy((e) => [e.date], ["desc"])
-        .value();
-      return result;
-    }
+  }else{
+    const result = getAllEvents()
+    return result;
   }
 };
 

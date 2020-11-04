@@ -95,7 +95,7 @@ export const mainListItems = (
       <ListItemIcon>
         <SupervisorAccountIcon />
       </ListItemIcon>
-      <ListItemText primary="Admin Dashboard" />
+      <ListItemText primary="Admin" />
     </ListItem>
     }
   </div>

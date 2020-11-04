@@ -1,16 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import TextField from "@material-ui/core/TextField";
 import { weeklyRetentionObject } from "../../models/event";
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ReferenceLine,
-// } from "recharts";
 import axios from "axios";
 import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
 import { withStyles, Theme, createStyles, makeStyles } from "@material-ui/core/styles";
@@ -76,7 +66,7 @@ const RetentionCohort: React.FC = () => {
             {retentionData &&
               retentionData.map((week, i) => {
                   return(
-                      <StyledTableCell align="right">Week {i}</StyledTableCell>
+                      <StyledTableCell align="right"> Week {i}</StyledTableCell>
                   )
               })}
           </TableRow>
@@ -87,7 +77,8 @@ const RetentionCohort: React.FC = () => {
               return (
                 <StyledTableRow key={week.start}>
                   <StyledTableCell component="th" scope="row">
-                    {`${week.start} - ${week.end}`}
+                    {`${week.start} - ${week.end}`}<br/>
+                    <label>{`New User: ${week.newUsers}`}</label>
                   </StyledTableCell>
                   {week.weeklyRetention.map((value) => {
                     return <StyledTableCell align="right">{value}</StyledTableCell>;

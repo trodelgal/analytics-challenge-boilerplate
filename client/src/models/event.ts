@@ -11,9 +11,9 @@ export interface Event {
 }
 
 export interface Filter {
-  sorting?: string;
-  type?: string;
-  browser?: string;
+  sorting?: sorting;
+  type?: eventName;
+  browser?: browser;
   search?: string;
   offset?: number;
 }
@@ -29,6 +29,7 @@ export interface weeklyRetentionObject {
 export type eventName = "login" | "signup" | "admin" | "/";
 export type os = "windows" | "mac" | "linux" | "ios" | "android" | "other";
 export type browser = "chrome" | "safari" | "edge" | "firefox" | "ie" | "other";
+export type sorting = "+date" | "-date";
 export type GeoLocation = {
   location: Location;
   accuracy: number;
@@ -37,15 +38,14 @@ export type Location = {
   lat: number;
   lng: number;
 };
-export type sorting = "+date" | "-date";
 
-export interface RetentionCohort {
-  sorting?: string;
-  type?: string;
-  browser?: string;
-  search?: string;
-  offset?: number;
-}
+// export interface RetentionCohort {
+//   sorting?: string;
+//   type?: string;
+//   browser?: string;
+//   search?: string;
+//   offset?: number;
+// }
 
 export interface DaysEvents {
   date: string;
