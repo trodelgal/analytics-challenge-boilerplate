@@ -29,22 +29,21 @@ const UrlPie: React.FC<Props> = ({ allEvents }) => {
             counter++;
           }
         }
-        return { name: url, value: counter };
+        return { name: url.slice(7), value: counter };
       });
       return pieDataFormat;
     }
   }
 
   useEffect(() => {
-    const x = getPieData(allEvents);
-    setChartData(x);
+    const pieData = getPieData(allEvents);
+    setChartData(pieData);
   }, [allEvents]);
-  console.log("chartData", chartData);
 
   return (
     <div>
       <h2>Events On URL</h2>
-      <PieChart width={300} height={220}>
+      <PieChart width={300} height={350}>
         <Pie dataKey="value" data={chartData} cx="50%" cy="50%" outerRadius={80} label>
           {chartData &&
             chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index]} />)}

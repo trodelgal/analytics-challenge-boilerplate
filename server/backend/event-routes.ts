@@ -11,6 +11,9 @@ import {
   HoursEvents,
   eventName,
 } from "../../client/src/models/event";
+import {
+  User
+} from "../../client/src/models/user";
 import { ensureAuthenticated, validateMiddleware } from "./helpers";
 import {
   shortIdValidation,
@@ -32,6 +35,7 @@ import {
   getDayString,
   todayEvents,
   thisWeekEvents,
+  getAllUsers
 } from "./database";
 const router = express.Router();
 
@@ -53,20 +57,22 @@ router.get("/all", (req: Request, res: Response) => {
 router.get("/all-filtered", (req: Request, res: Response) => {
   try {
     const filters: Filter = req.query;
-    const events = getEventFiltered(filters);
+    const events:Event[] = getEventFiltered(filters);
+    const users:User[] = getAllUsers(); 
+    
     const sort = filters.sorting ? filters.sorting : "";
     const offset = filters.offset;
-    const search = filters.search ? filters.search : "";
+    const search = filters.search ? filters.search.toLowerCase() : "";
     let more = false;
     let searchEvent: Event[] = [];
     events.forEach((event: Event) => {
       if (
-        event._id.includes(search) ||
-        event.session_id.includes(search) ||
-        event.name.includes(search) ||
-        event.distinct_user_id.includes(search) ||
-        event.os.includes(search) ||
-        event.browser.includes(search)
+        event._id.toLowerCase().includes(search) ||
+        event.session_id.toLowerCase().includes(search) ||
+        event.name.toLowerCase().includes(search) ||
+        event.distinct_user_id.toLowerCase().includes(search) ||
+        event.os.toLowerCase().includes(search) ||
+        event.browser.toLowerCase().includes(search)
       ) {
         searchEvent.push(event);
       }
@@ -79,11 +85,19 @@ router.get("/all-filtered", (req: Request, res: Response) => {
       searchEvent.sort((a, b) => b.date - a.date);
     }
     if (offset && offset < searchEvent.length) {
-      console.log("here", offset);
-
       more = true;
       searchEvent = searchEvent.slice(0, offset);
     }
+    if(users){
+      searchEvent.forEach(event=>{
+        users.forEach(user=>{
+          if(event.distinct_user_id === user.id){
+            event.user_name = `${user.firstName} ${user.lastName}`
+          }
+        })
+      })
+    }
+    
     const returnObject = { events: searchEvent, more: more };
     res.send(returnObject);
   } catch (err) {

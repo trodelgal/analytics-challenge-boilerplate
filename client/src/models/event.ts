@@ -4,6 +4,7 @@ export interface Event {
   name: eventName;
   url: string;
   distinct_user_id: string;
+  user_name?: string;
   date: number;
   os: os;
   browser: browser;
@@ -26,10 +27,10 @@ export interface weeklyRetentionObject {
   end:string
 }
 
-export type eventName = "login" | "signup" | "admin" | "/";
-export type os = "windows" | "mac" | "linux" | "ios" | "android" | "other";
-export type browser = "chrome" | "safari" | "edge" | "firefox" | "ie" | "other";
-export type sorting = "+date" | "-date";
+export type eventName = "login" | "signup" | "admin" | "/"| "";
+export type os = "windows" | "mac" | "linux" | "ios" | "android" | "other"| "";
+export type browser = "chrome" | "safari" | "edge" | "firefox" | "ie" | "other"| "";
+export type sorting = "+date" | "-date" | "";
 export type GeoLocation = {
   location: Location;
   accuracy: number;

@@ -69,7 +69,7 @@ const PrivateRoutesContainer: React.FC<Props> = ({
           <TransactionDetailContainer authService={authService} />
         </PrivateRoute>
         <Route exact path="/admin">
-          <DashBoard />
+          <DashBoard authService={authService} />
         </Route>
       </Switch>
     </MainLayout>

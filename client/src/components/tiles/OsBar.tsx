@@ -15,7 +15,7 @@ interface ChartData {
 const OsBar: React.FC<Props> = ({ allEvents }) => {
   const [chartData, setChartData] = useState<ChartData[]>();
 
-  function getPieData(events: Event[]): ChartData[] | undefined {
+  function getbarData(events: Event[]): ChartData[] | undefined {
     let ops: string[] = [];
     if (events) {
       events.forEach((event) => {
@@ -37,8 +37,8 @@ const OsBar: React.FC<Props> = ({ allEvents }) => {
   }
 
   useEffect(() => {
-    const x = getPieData(allEvents);
-    setChartData(x);
+    const barData = getbarData(allEvents);
+    setChartData(barData);
   }, [allEvents]);
 
   return (

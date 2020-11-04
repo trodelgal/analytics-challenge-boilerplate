@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import TextField from "@material-ui/core/TextField";
-import { weeklyRetentionObject } from "../../models/event";
+import { eventName, os, browser, sorting } from "../../models/event";
 import axios from "axios";
 import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
 import { withStyles, Theme, createStyles, makeStyles } from "@material-ui/core/styles";
@@ -54,9 +54,9 @@ const Row: React.FC<RowProps> = ({ event }) => {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {event.name}
+        {event.user_name}
         </TableCell>
-        <TableCell>{event.distinct_user_id}</TableCell>
+        <TableCell> {event.name}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -78,7 +78,7 @@ const Row: React.FC<RowProps> = ({ event }) => {
                 <TableBody>
                   <TableRow key={event._id}>
                     <TableCell component="th" scope="row">
-                      {event.date}
+                      {getDayString(event.date)}
                     </TableCell>
                     <TableCell>{event.browser}</TableCell>
                     <TableCell>{event.os}</TableCell>
@@ -109,55 +109,67 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const EventsLog: React.FC = () => {
   const [filteredEvent, setFilteredEvent] = useState<eventFilter>();
-  const [sorting, setSorting] = useState<string>("");
-  const [type, setType] = useState<string>("");
-  const [browser, setBrowser] = useState<string>("");
+  const [sorting, setSorting] = useState<sorting>("");
+  const [type, setType] = useState<eventName>("");
+  const [browser, setBrowser] = useState<browser>("");
   const [search, setSearch] = useState<string>("");
   const [offset, setOffset] = useState<number>(10);
   const classes = useStyles();
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSorting(event.target.value as string);
+  const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSorting(event.target.value as sorting);
+  };
+  const handleBrowserChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setBrowser(event.target.value as browser);
+  };
+  const handleTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setType(event.target.value as eventName);
+  };
+  const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSearch(event.target.value as string);
   };
 
-  const fetchEvent = useCallback(async () => {
+  const fetchEvent = async () => {
     const { data } = await axios.get(
       `http://localhost:3001/events/all-filtered?sorting=${sorting}&type=${type}&browser=${browser}&search=${search}&offset=${offset}`
     );
-    console.log(data);
     setFilteredEvent(data);
-  }, []);
+  }
 
   useEffect(() => {
     fetchEvent();
   }, [sorting, type, browser, search, offset]);
 
+
   return (
     <div>
       <div>
+        <TextField id="standard-basic" label="Standard" autoComplete="on" onChange={handleSearchChange}/>
         <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Sort</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={sorting}
-            onChange={handleChange}
+            onChange={handleSortChange}
           >
             <MenuItem value={'+date'}>+Date</MenuItem>
             <MenuItem value={'-date'}>-Date</MenuItem>
+            <MenuItem value={''}>clean</MenuItem>
           </Select>
         </FormControl>
-        {/* <FormControl className={classes.formControl}>
+         <FormControl className={classes.formControl}> 
           <InputLabel id="demo-simple-select-label">Type</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
-            onChange={handleChange}
+            value={type}
+            onChange={handleTypeChange}
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={"login"}>login</MenuItem>
+            <MenuItem value={"signup"}>signup</MenuItem>
+            <MenuItem value={"admin"}>admin</MenuItem>
+            <MenuItem value={""}>clean</MenuItem>
           </Select>
         </FormControl>
         <FormControl className={classes.formControl}>
@@ -165,14 +177,18 @@ const EventsLog: React.FC = () => {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
-            onChange={handleChange}
+            value={browser}
+            onChange={handleBrowserChange}
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={"chrome"}>chrome</MenuItem>
+            <MenuItem value={"firefox"}>firefox</MenuItem>
+            <MenuItem value={"safari"}>safari</MenuItem>
+            <MenuItem value={"edge"}>edge</MenuItem>
+            <MenuItem value={"ie"}>ie</MenuItem>
+            <MenuItem value={"other"}>other</MenuItem>
+            <MenuItem value={""}>clean</MenuItem>
           </Select>
-        </FormControl> */}
+        </FormControl> 
       </div>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
@@ -187,7 +203,7 @@ const EventsLog: React.FC = () => {
             {filteredEvent && filteredEvent.events ? (
               filteredEvent.events.map((event) => <Row key={event._id} event={event} />)
             ) : (
-              <h1>Loadung</h1>
+              <h1>Loading</h1>
             )}
           </TableBody>
         </Table>
