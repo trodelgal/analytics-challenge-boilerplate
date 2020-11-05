@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import TextField from "@material-ui/core/TextField";
-import { eventName, os, browser, sorting } from "../../models/event";
-import axios from "axios";
-import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
-import { withStyles, Theme, createStyles, makeStyles } from "@material-ui/core/styles";
+import { eventName, browser, sorting, Event } from "../../models/event";
+import { getDayString,} from "../../helpFunctions";
+import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -11,7 +10,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { Event, Filter } from "../../models/event";
+import { EventLogContainer, FilterBar } from "./style";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
@@ -20,9 +19,9 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import useFilterData from "./UseFilterData";
 
 interface RowProps {
   event: Event;
@@ -54,7 +53,7 @@ const Row: React.FC<RowProps> = ({ event }) => {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-        {event.user_name}
+          {event.user_name}
         </TableCell>
         <TableCell> {event.name}</TableCell>
       </TableRow>
@@ -99,7 +98,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      minWidth: "70%",
     },
     selectEmpty: {
       marginTop: theme.spacing(2),
@@ -108,43 +107,53 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const EventsLog: React.FC = () => {
-  const [filteredEvent, setFilteredEvent] = useState<eventFilter>();
   const [sorting, setSorting] = useState<sorting>("");
   const [type, setType] = useState<eventName>("");
   const [browser, setBrowser] = useState<browser>("");
   const [search, setSearch] = useState<string>("");
   const [offset, setOffset] = useState<number>(10);
+  const { data, error, loading, hasMore } = useFilterData(sorting, type, browser, search, offset);
   const classes = useStyles();
+
+  const observer:any = useRef();
+  const lastOneRef = useCallback((node:any)=>{
+    if(loading) return
+    if(observer && observer.current) observer.current.disconnect()
+    observer.current = new IntersectionObserver(entries=>{
+      if(entries[0].isIntersecting && hasMore){
+        setOffset(prevOffset=> prevOffset + 10)
+      }
+    })
+    if(node)observer.current.observe(node)
+  },[loading,hasMore]);
+
 
   const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSorting(event.target.value as sorting);
+    setOffset(10);
   };
   const handleBrowserChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setBrowser(event.target.value as browser);
+    setOffset(10);
   };
   const handleTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setType(event.target.value as eventName);
+    setOffset(10);
   };
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSearch(event.target.value as string);
+    setOffset(10);
   };
 
-  const fetchEvent = async () => {
-    const { data } = await axios.get(
-      `http://localhost:3001/events/all-filtered?sorting=${sorting}&type=${type}&browser=${browser}&search=${search}&offset=${offset}`
-    );
-    setFilteredEvent(data);
-  }
-
-  useEffect(() => {
-    fetchEvent();
-  }, [sorting, type, browser, search, offset]);
-
-
   return (
-    <div>
-      <div>
-        <TextField id="standard-basic" label="Standard" autoComplete="on" onChange={handleSearchChange}/>
+    <EventLogContainer>
+      <FilterBar>
+        <TextField
+          id="standard-basic"
+          label="Standard"
+          autoComplete="on"
+          onChange={handleSearchChange}
+        />
         <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Sort</InputLabel>
           <Select
@@ -153,12 +162,12 @@ const EventsLog: React.FC = () => {
             value={sorting}
             onChange={handleSortChange}
           >
-            <MenuItem value={'+date'}>+Date</MenuItem>
-            <MenuItem value={'-date'}>-Date</MenuItem>
-            <MenuItem value={''}>clean</MenuItem>
+            <MenuItem value={"+date"}>+Date</MenuItem>
+            <MenuItem value={"-date"}>-Date</MenuItem>
+            <MenuItem value={""}>clean</MenuItem>
           </Select>
         </FormControl>
-         <FormControl className={classes.formControl}> 
+        <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Type</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -188,8 +197,12 @@ const EventsLog: React.FC = () => {
             <MenuItem value={"other"}>other</MenuItem>
             <MenuItem value={""}>clean</MenuItem>
           </Select>
-        </FormControl> 
-      </div>
+        </FormControl>
+        {
+        data&&
+          <div>event counter: {data.length}</div>
+        }
+      </FilterBar>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
@@ -200,15 +213,32 @@ const EventsLog: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredEvent && filteredEvent.events ? (
-              filteredEvent.events.map((event) => <Row key={event._id} event={event} />)
-            ) : (
-              <h1>Loading</h1>
-            )}
+            {data &&
+              data.map((event,i) =>{
+                if(data.length === i+1){
+                  
+                  return(
+                    <>
+                    <Row key={event._id} event={event} />
+                    <div ref={lastOneRef} />
+                    </>
+                    )
+                }
+                return <Row key={event._id} event={event} />
+              }) 
+            }
+            {
+              loading &&
+                <h1>Loading</h1>
+            }
+            {
+              error &&
+                <h1>Error</h1>
+            }
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </EventLogContainer>
   );
 };
 

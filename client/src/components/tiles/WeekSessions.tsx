@@ -9,10 +9,12 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
 import axios from "axios";
 import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
+import { ChartTitle, ChartCard } from "./style";
 
 const WeekSessions: React.FC = () => {
   const [weekSessionsData, setWeekSessionsData] = useState<DaysEvents[]>();
@@ -43,12 +45,11 @@ const WeekSessions: React.FC = () => {
   }
 
   return (
-    <div className="byDaySessions">
-      <>
+    <ChartCard>
         {(weekSessionsData && weekSessionsData[1]) ? (
-          <h2>{`Sessions each day between: ${weekSessionsData[0].date} - ${weekSessionsData[weekSessionsData.length - 1].date}`}</h2>
+          <ChartTitle>{`Sessions each day between: ${weekSessionsData[0].date} - ${weekSessionsData[weekSessionsData.length - 1].date}`}</ChartTitle>
         ) : (
-          <h2>There is not events on this dates</h2>
+          <ChartTitle>There is not events on this dates</ChartTitle>
         )}
         <TextField
           id="date"
@@ -60,7 +61,8 @@ const WeekSessions: React.FC = () => {
             shrink: true,
           }}
         />
-          <LineChart width={500} height={300} data={weekSessionsData}>
+        <ResponsiveContainer width={'100%'} height={200}>
+          <LineChart data={weekSessionsData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <YAxis />
@@ -68,8 +70,8 @@ const WeekSessions: React.FC = () => {
             <Legend />
             <Line type="monotone" dataKey="count" stroke="#8884d8" name="Sessions" activeDot={{ r: 6 }} />
           </LineChart>
-      </>
-    </div>
+        </ResponsiveContainer>
+    </ChartCard>
   );
 };
 

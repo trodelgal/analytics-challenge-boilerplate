@@ -10,6 +10,7 @@ import BankAccountsContainer from "./BankAccountsContainer";
 import TransactionCreateContainer from "./TransactionCreateContainer";
 import TransactionDetailContainer from "./TransactionDetailContainer";
 import DashBoard from "./DashBoard";
+import AllEvent from "./AllEvent";
 import { DataContext, DataSchema, DataEvents } from "../machines/dataMachine";
 import { AuthMachineContext, AuthMachineEvents } from "../machines/authMachine";
 import { SnackbarContext, SnackbarSchema, SnackbarEvents } from "../machines/snackbarMachine";
@@ -70,6 +71,9 @@ const PrivateRoutesContainer: React.FC<Props> = ({
         </PrivateRoute>
         <Route exact path="/admin">
           <DashBoard authService={authService} />
+        </Route>
+        <Route exact path="/admin/events">
+          <AllEvent authService={authService} />
         </Route>
       </Switch>
     </MainLayout>

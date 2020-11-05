@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { PieChart, Pie, Legend, Tooltip, Cell } from "recharts";
+import { PieChart, Pie, Legend, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import { Event } from "../../models/event";
+import { ChartTitle, PieChartCard } from "./style";
 
 interface Props {
   allEvents: Event[];
@@ -41,9 +42,10 @@ const UrlPie: React.FC<Props> = ({ allEvents }) => {
   }, [allEvents]);
 
   return (
-    <div>
-      <h2>Events On URL</h2>
-      <PieChart width={300} height={350}>
+    <PieChartCard>
+      <ChartTitle>Events On URL</ChartTitle>
+      <ResponsiveContainer width={'100%'} height={300}>
+      <PieChart >
         <Pie dataKey="value" data={chartData} cx="50%" cy="50%" outerRadius={80} label>
           {chartData &&
             chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index]} />)}
@@ -51,7 +53,8 @@ const UrlPie: React.FC<Props> = ({ allEvents }) => {
         <Tooltip />
         <Legend />
       </PieChart>
-    </div>
+      </ResponsiveContainer>
+    </PieChartCard>
   );
 };
 

@@ -11,6 +11,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import {FullLineContainer} from "./style";
 
 const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -19,7 +20,7 @@ const StyledTableCell = withStyles((theme: Theme) =>
       color: theme.palette.common.white,
     },
     body: {
-      fontSize: 14,
+      fontSize: 10,
     },
   })
 )(TableCell);
@@ -34,16 +35,16 @@ const StyledTableRow = withStyles((theme: Theme) =>
   })
 )(TableRow);
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700,
-  },
-});
+// const useStyles = makeStyles({
+//   table: {
+//     minWidth: 700,
+//   },
+// });
 
 const RetentionCohort: React.FC = () => {
   const [retentionData, setRetentionDate] = useState<weeklyRetentionObject[]>();
   const [dayZero, setDayZero] = useState<number>();
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const fetchRetentionData = useCallback(async () => {
     const { data } = await axios.get(
@@ -58,8 +59,8 @@ const RetentionCohort: React.FC = () => {
   }, []);
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="customized table">
+    <FullLineContainer >
+      <Table aria-label="customized table">
         <TableHead>
           <TableRow>
             <StyledTableCell></StyledTableCell>
@@ -88,7 +89,7 @@ const RetentionCohort: React.FC = () => {
             })}
         </TableBody>
       </Table>
-    </TableContainer>
+    </FullLineContainer>
   );
 };
 

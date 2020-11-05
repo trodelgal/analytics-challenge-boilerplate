@@ -188,9 +188,9 @@ router.get("/week", (req: Request, res: Response) => {
 router.get("/retention", (req: Request, res: Response) => {
   try {
     let dayZero = getStartOfDayTime(parseInt(req.query.dayZero));
-    const timeNow = getEndOfDayTime(Date.now());
+    const todayEnd = getEndOfDayTime(Date.now());
     const weeks: number[] = [dayZero];
-    for (let time = dayZero + OneWeek; time <= timeNow; time += OneWeek) {
+    for (let time = dayZero + OneWeek; time <= todayEnd; time += OneWeek) {
       if (new Date(time).getHours() != 0) {
         weeks.push(getStartOfDayTime(time + OneDay));
       } else {
@@ -274,54 +274,16 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // router.get("/all-by-users", (req: Request, res: Response) => {
-//   const time = req.params.time;
-//   if(time === 'all'){
-//     return res.send(getAllEvents())
-//   }else if(time === 'today'){
-//     return res.send(getTodayEvents())
-//   }else if(time === 'week'){
-//     return res.send(getThisWeekEvents())
-//   }else{
-//     return res.sendStatus(404).send('bad request');
-//   }
 // });
 
 // router.get("/chart/pageview/:time", (req: Request, res: Response) => {
-//   const time = req.params.time;
-//   if(time === 'all'){
-//     return res.send(getAllEvents())
-//   }else if(time === 'today'){
-//     return res.send(getTodayEvents())
-//   }else if(time === 'week'){
-//     return res.send(getThisWeekEvents())
-//   }else{
-//     return res.sendStatus(404).send('bad request');
-//   }
 // });
 
 // router.get("/chart/timeonurl/:time", (req: Request, res: Response) => {
-//   const time = req.params.time;
-//   if(time === 'all'){
-//     return res.send(getAllEvents())
-//   }else if(time === 'today'){
-//     return res.send(getTodayEvents())
-//   }else if(time === 'week'){
-//     return res.send(getThisWeekEvents())
-//   }else{
-//     return res.sendStatus(404).send('bad request');
-//   }
+
 // });
 
 // router.get("/chart/geolocation/:time", (req: Request, res: Response) => {
-//   const time = req.params.time;
-//   if(time === 'all'){
-//     return res.send(getAllEvents())
-//   }else if(time === 'today'){
-//     return res.send(getTodayEvents())
-//   }else if(time === 'week'){
-//     return res.send(getThisWeekEvents())
-//   }else{
-//     return res.sendStatus(404).send('bad request');
-//   }
+
 // });
 export default router;

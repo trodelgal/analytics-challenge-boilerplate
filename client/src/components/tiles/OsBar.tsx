@@ -1,8 +1,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 import {
-    BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  } from 'recharts';
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Event } from "../../models/event";
+import { ChartTitle, PieChartCard } from "./style";
 
 interface Props {
   allEvents: Event[];
@@ -42,24 +51,27 @@ const OsBar: React.FC<Props> = ({ allEvents }) => {
   }, [allEvents]);
 
   return (
-    <div>
-      <h2>Distribution of the events by Operating System</h2>
-      <BarChart
-        width={500}
-        height={300}
-        data={chartData}
-        margin={{
-          top: 5, right: 30, left: 20, bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="system" fill="#8884d8" />
-      </BarChart>
-    </div>
+    <PieChartCard>
+      <ChartTitle>Distribution of the events by Operating System</ChartTitle>
+      <ResponsiveContainer width={"100%"} height={250}>
+        <BarChart
+          data={chartData}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="system" fill="#8884d8" />
+        </BarChart>
+      </ResponsiveContainer>
+    </PieChartCard>
   );
 };
 
