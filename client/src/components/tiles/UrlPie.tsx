@@ -43,7 +43,7 @@ const UrlPie: React.FC<Props> = ({ allEvents }) => {
 
   return (
     <PieChartCard>
-      <ChartTitle>Events On URL</ChartTitle>
+      <ChartTitle>Page Views</ChartTitle>
       <ResponsiveContainer width={'100%'} height={300}>
       <PieChart >
         <Pie dataKey="value" data={chartData} cx="50%" cy="50%" outerRadius={80} label>

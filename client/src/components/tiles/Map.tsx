@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 import { GoogleMap, LoadScript, Marker, MarkerClusterer } from "@react-google-maps/api";
 import { Event } from "../../models/event";
 import axios from "axios";
-import {FullLineContainer} from "./style";
+import {MapContainer} from "./style";
+import {REACT_APP_GOOGLE_KEY} from '../secret'
 // require("dotenv").config();
 
 interface MapProps {
@@ -21,11 +22,10 @@ const center = {
 };
 
 const Map: React.FC<MapProps> = ({ allEvents }) => {
-  console.log(`${process.env.REACT_APP_GOOGLE_KEY}`);
 
   return (
-    <FullLineContainer>
-      <LoadScript googleMapsApiKey="">
+    <MapContainer>
+      <LoadScript googleMapsApiKey={REACT_APP_GOOGLE_KEY}>
         <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={1.5}>
           <MarkerClusterer averageCenter enableRetinaIcons gridSize={80}>
             {(clusterer) =>
@@ -49,7 +49,7 @@ const Map: React.FC<MapProps> = ({ allEvents }) => {
           </MarkerClusterer>
         </GoogleMap>
       </LoadScript>
-    </FullLineContainer>
+    </MapContainer>
   );
 };
 

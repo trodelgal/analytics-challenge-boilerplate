@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from "react";
 import TextField from "@material-ui/core/TextField";
 import { eventName, browser, sorting, Event } from "../../models/event";
-import { getDayString,} from "../../helpFunctions";
+import { getDayString } from "../../helpFunctions";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -26,6 +26,7 @@ import useFilterData from "./UseFilterData";
 interface RowProps {
   event: Event;
   key: string;
+  i: number;
 }
 interface eventFilter {
   events: Event[];
@@ -40,7 +41,7 @@ const useRowStyles = makeStyles({
   },
 });
 
-const Row: React.FC<RowProps> = ({ event }) => {
+const Row: React.FC<RowProps> = ({ event, i }) => {
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
 
@@ -51,6 +52,9 @@ const Row: React.FC<RowProps> = ({ event }) => {
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {i + 1}
         </TableCell>
         <TableCell component="th" scope="row">
           {event.user_name}
@@ -115,18 +119,20 @@ const EventsLog: React.FC = () => {
   const { data, error, loading, hasMore } = useFilterData(sorting, type, browser, search, offset);
   const classes = useStyles();
 
-  const observer:any = useRef();
-  const lastOneRef = useCallback((node:any)=>{
-    if(loading) return
-    if(observer && observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries=>{
-      if(entries[0].isIntersecting && hasMore){
-        setOffset(prevOffset=> prevOffset + 10)
-      }
-    })
-    if(node)observer.current.observe(node)
-  },[loading,hasMore]);
-
+  const observer: any = useRef();
+  const lastOneRef = useCallback(
+    (node: any) => {
+      if (loading) return;
+      if (observer && observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setOffset((prevOffset) => prevOffset + 10);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSorting(event.target.value as sorting);
@@ -198,43 +204,32 @@ const EventsLog: React.FC = () => {
             <MenuItem value={""}>clean</MenuItem>
           </Select>
         </FormControl>
-        {
-        data&&
-          <div>event counter: {data.length}</div>
-        }
       </FilterBar>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
               <TableCell />
+              <TableCell></TableCell>
               <TableCell>User</TableCell>
               <TableCell>Event Name</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data &&
-              data.map((event,i) =>{
-                if(data.length === i+1){
-                  
-                  return(
+              data.map((event, i) => {
+                if (data.length === i + 1) {
+                  return (
                     <>
-                    <Row key={event._id} event={event} />
-                    <div ref={lastOneRef} />
+                      <Row key={event._id} event={event} i={i} />
+                      <div ref={lastOneRef} />
                     </>
-                    )
+                  );
                 }
-                return <Row key={event._id} event={event} />
-              }) 
-            }
-            {
-              loading &&
-                <h1>Loading</h1>
-            }
-            {
-              error &&
-                <h1>Error</h1>
-            }
+                return <Row key={event._id} event={event} i={i} />;
+              })}
+            {loading && <h1>Loading</h1>}
+            {error && <h1>Error</h1>}
           </TableBody>
         </Table>
       </TableContainer>

@@ -52,7 +52,7 @@ const OsBar: React.FC<Props> = ({ allEvents }) => {
 
   return (
     <PieChartCard>
-      <ChartTitle>Distribution of the events by Operating System</ChartTitle>
+      <ChartTitle>operating system usage</ChartTitle>
       <ResponsiveContainer width={"100%"} height={250}>
         <BarChart
           data={chartData}

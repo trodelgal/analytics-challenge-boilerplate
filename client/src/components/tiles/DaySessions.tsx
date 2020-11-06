@@ -9,17 +9,14 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts";
 import axios from "axios";
-import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
-import styled from "styled-components";
+import { getDayString, getStartOfDayTime, OneDay } from "../../helpFunctions";
 import { ChartTitle, ChartCard } from "./style";
 
 const DaySessions: React.FC = () => {
   const [mainDaySessionsData, setMainDaySessionsData] = useState<HoursEvents[]>();
-  // const [secondaryDeySessionsData, setSeconaryDeySessionsData] = useState<HoursEvents[]>();
   const [mainOffset, setMainOffset] = useState<number>(0);
   const [secondOffset, setSecondOffset] = useState<number>(-1);
   let mainDate: string = getDayString(Date.now() - mainOffset * OneDay);
@@ -28,7 +25,6 @@ const DaySessions: React.FC = () => {
   const fetchMainDaySessionsDate = async () => {
     try {
       const { data } = await axios.get(`http://localhost:3001/events/by-hours/${mainOffset}`);
-      console.log(data);
       setMainDaySessionsData(data);
     } catch (error) {
       console.log(error);
@@ -78,40 +74,39 @@ const DaySessions: React.FC = () => {
       setSecondOffset(newOffset);
     }
   }
-  console.log(mainDaySessionsData);
 
   return (
     <ChartCard>
-        {mainDaySessionsData && mainDaySessionsData[1] ? (
-          <ChartTitle>{`Day Sessions`}</ChartTitle>
-        ) : (
-          <ChartTitle>There is not events on this date</ChartTitle>
-        )}
-        <div>
-          <TextField
-            id="date"
-            label="Main"
-            defaultValue={new Date().toISOString().slice(0, 10)}
-            type="date"
-            onChange={(e) => handleMainDateChange(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            style={{margin:'3px', width:'40%'}}
-          />
-          <TextField
-            id="date"
-            label="Secondary"
-            defaultValue={new Date().toISOString().slice(0, 10)}
-            type="date"
-            onChange={(e) => handleSecondaryDateChange(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            style={{margin:'3px', width:'40%'}}
-          />
-        </div>
-        <ResponsiveContainer width={'100%'} height={200}>
+      {mainDaySessionsData && mainDaySessionsData[1] ? (
+        <ChartTitle>{`Day Sessions`}</ChartTitle>
+      ) : (
+        <ChartTitle>There is not events on this date</ChartTitle>
+      )}
+      <div>
+        <TextField
+          id="date"
+          label="Main"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+          type="date"
+          onChange={(e) => handleMainDateChange(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          style={{ margin: "3px", width: "40%" }}
+        />
+        <TextField
+          id="date"
+          label="Secondary"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+          type="date"
+          onChange={(e) => handleSecondaryDateChange(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          style={{ margin: "3px", width: "40%" }}
+        />
+      </div>
+      <ResponsiveContainer width={"100%"} height={200}>
         <LineChart data={mainDaySessionsData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="hour" />
@@ -133,7 +128,7 @@ const DaySessions: React.FC = () => {
             activeDot={{ r: 6 }}
           />
         </LineChart>
-        </ResponsiveContainer>
+      </ResponsiveContainer>
     </ChartCard>
   );
 };

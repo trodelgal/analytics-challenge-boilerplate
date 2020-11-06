@@ -23,8 +23,6 @@ const WeekSessions: React.FC = () => {
   const fetchWeekSessionsDate = async () => {
     try {
       const { data } = await axios.get(`http://localhost:3001/events/by-days/${offset}`);
-      console.log(data);
-
       setWeekSessionsData(data);
     } catch (error) {
       console.log(error);
