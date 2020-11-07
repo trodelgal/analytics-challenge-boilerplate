@@ -51,6 +51,10 @@
 
 ![](./readme-pic/AllEvents.png)
 
+## GIF:
+
+![](./readme-pic/main.gif)
+
 #### Libraries:
 - muterial UI.
 - recharts.
