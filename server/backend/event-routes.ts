@@ -14,24 +14,16 @@ import {
 import {
   User
 } from "../../client/src/models/user";
-import { ensureAuthenticated, validateMiddleware } from "./helpers";
-import {
-  shortIdValidation,
-  searchValidation,
-  userFieldsValidator,
-  isUserValidator,
-} from "./validators";
 import {
   getAllEvents,
   getEventById,
   getWeekEventGroupByDays,
   getDayEventsGroupByHours,
-  getEventFiltered,
+  getEventFilteredTypeAndBrowser,
   createEvent,
   getEventByType,
   getStartOfDayTime,
   getEndOfDayTime,
-  getOStartOfWeekTime,
   getDayString,
   todayEvents,
   thisWeekEvents,
@@ -57,13 +49,14 @@ router.get("/all", (req: Request, res: Response) => {
 router.get("/all-filtered", (req: Request, res: Response) => {
   try {
     const filters: Filter = req.query;
-    const events:Event[] = getEventFiltered(filters);
+    const events:Event[] = getEventFilteredTypeAndBrowser(filters);
     const users:User[] = getAllUsers(); 
     
     const sort = filters.sorting ? filters.sorting : "";
     const offset = filters.offset;
     const search = filters.search ? filters.search.toLowerCase() : "";
     let more = false;
+    // Filter Search Text
     let searchEvent: Event[] = [];
     events.forEach((event: Event) => {
       if (

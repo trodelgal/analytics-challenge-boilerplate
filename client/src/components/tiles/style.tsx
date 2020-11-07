@@ -21,7 +21,7 @@ export const ChartCard = styled.div`
   width:50%;
   height:300px;
   margin:0.5%;
-  padding:1% 2% 1% 1%;
+  padding:1% 1% 1% 1%;
   border:1px solid #ccc;
   border-radius:3px;
 `;
@@ -39,11 +39,14 @@ export const PieChartCard = styled.div`
 `;
 export const FullLineContainer = styled.div`
   width:100%;
-  /* height:100%; */
   margin:0.5%;
   padding:1%;
   border:1px solid #ccc;
   border-radius:1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: space-around;
 `;
 export const MapContainer = styled.div`
   width:100%;

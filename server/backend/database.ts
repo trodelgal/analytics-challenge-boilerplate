@@ -290,7 +290,7 @@ export const getDayEventsGroupByHours = (offset: number) => {
 
 // Fillter Events
 
-export const getEventFiltered = (opt: Filter) => {
+export const getEventFilteredTypeAndBrowser = (opt: Filter) => {
     if (opt.type && opt.browser) {
       const result = db
         .get(EVENT_TABLE)

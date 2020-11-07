@@ -18,6 +18,7 @@ import {
   MediumBlueCell,
   MediumLightBlueCell,
   LightBlueCell,
+  ChartTitle
 } from "./style";
 
 export const StyledTableCell = withStyles((theme: Theme) =>
@@ -94,6 +95,7 @@ for (let i=0; i<11; i++){
 
   return (
     <FullLineContainer>
+      <ChartTitle>Retention Cohort</ChartTitle>
         <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Day Zero</InputLabel>
           <Select
