@@ -1,7 +1,7 @@
 # My Work
 ## server
 ### Work On `event-routes.ts` File
-#### Entry Point:
+#### End Points:
 - `/all` - Return all the events from DB. 
 - `/all-filtered` - Return all the evemts from DB filtered by type, browser and search text. Option to limit the numbers of the events and sort them by event date. 
 - `/by-days/:offset` - Return count of unique sessions (events with different session_id), grouped by days, for one week. 
