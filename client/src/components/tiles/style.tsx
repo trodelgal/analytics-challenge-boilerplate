@@ -18,43 +18,53 @@ export const ChartCard = styled.div`
   flex-direction: column;
   align-items: center;
   align-content: space-around;
-  width:50%;
-  height:300px;
-  margin:0.5%;
-  padding:1% 1% 1% 1%;
-  border:1px solid #ccc;
-  border-radius:3px;
+  width: 49%;
+  min-width: 360px;
+  height: 400px;
+  margin: 0.5%;
+  padding: 1% 1% 1% 1%;
+  border: 1px solid #ccc;
+  border-radius: 1px;
+  -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+  box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
 `;
 export const PieChartCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   align-content: space-around;
-  width:50%;
-  height:350px;
-  margin:0.5%;
-  padding:1% 2% 1% 1%;
-  border:1px solid #ccc;
-  border-radius:1px;
+  width: 49%;
+  min-width: 360px;
+  height: 350px;
+  margin: 0.5%;
+  padding: 1% 2% 1% 1%;
+  border: 1px solid #ccc;
+  border-radius: 1px;
+  -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+  box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
 `;
 export const FullLineContainer = styled.div`
-  width:100%;
-  margin:0.5%;
-  padding:1%;
-  border:1px solid #ccc;
-  border-radius:1px;
+  width: 98%;
+  margin: 0.5%;
+  padding: 1%;
+  border: 1px solid #ccc;
+  border-radius: 1px;
   display: flex;
   flex-direction: column;
   align-items: center;
   align-content: space-around;
+  -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+  box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
 `;
 export const MapContainer = styled.div`
-  width:100%;
-  height:350px;
-  margin:0.5%;
-  padding:1%;
-  border:1px solid #ccc;
-  border-radius:1px;
+  width: 98%;
+  height: 350px;
+  margin: 0.5%;
+  padding: 1%;
+  border: 1px solid #ccc;
+  border-radius: 1px;
+  -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+  box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
 `;
 export const DashbordLayout = styled.div`
   display: flex;
@@ -65,11 +75,13 @@ export const DashbordLayout = styled.div`
 export const DashbordLine = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   width: 100%;
-  margin:0.1%;
+  margin: 0.1%;
 `;
 export const EventLogContainer = styled.div`
   display: flex;
+  /* flex-wrap: wrap; */
   width: 100%;
 `;
 export const FilterBar = styled.div`
@@ -80,24 +92,23 @@ export const FilterBar = styled.div`
 `;
 export const DarkBlueCell = styled(TableCell)`
   background-color: #1a39a8;
-  border:solid 1px grey;
+  border: solid 1px grey;
   font-size: 10px;
   color: white;
 `;
 export const MediumBlueCell = styled(TableCell)`
   background-color: #3a77e6;
-  border:solid 1px grey;
+  border: solid 1px grey;
   font-size: 10px;
   color: white;
 `;
 export const MediumLightBlueCell = styled(TableCell)`
   background-color: #9bbbf2;
-  border:solid 1px grey;
+  border: solid 1px grey;
   font-size: 10px;
 `;
 export const LightBlueCell = styled(TableCell)`
   background-color: #b0bdd4;
-  border:solid 1px grey;
+  border: solid 1px grey;
   font-size: 10px;
 `;
-
