@@ -1,21 +1,20 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import { Interpreter } from "xstate";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Button } from "@material-ui/core";
-import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import styled from "styled-components";
+import { Link as RouterLink } from "react-router-dom";
 import { AuthMachineContext, AuthMachineEvents } from "../machines/authMachine";
 import { Event } from "../models/event";
 import { useService } from "@xstate/react";
-import WeekSessions from "../components/tiles/WeekSessions";
-import RetentionCohort from "../components/tiles/RetentionCohort";
-import DaySessions from "../components/tiles/DaySessions";
-import Map from "../components/tiles/Map";
-import UrlPie from "../components/tiles/UrlPie";
-import OsBar from "../components/tiles/OsBar";
 import axios from "axios";
 import { DashbordLayout, DashbordLine } from "../components/tiles/style";
+const WeekSessions = lazy(() => import("../components/tiles/WeekSessions"));
+const DaySessions = lazy(() => import("../components/tiles/DaySessions"));
+const RetentionCohort = lazy(() => import("../components/tiles/RetentionCohort"));
+const Map = lazy(() => import("../components/tiles/Map"));
+const UrlPie = lazy(() => import("../components/tiles/UrlPie"));
+const OsBar = lazy(() => import("../components/tiles/OsBar"));
 
 export interface Props {
   authService: Interpreter<AuthMachineContext, any, AuthMachineEvents, any>;
@@ -67,15 +66,27 @@ const DashBoard: React.FC<Props> = ({ authService }) => {
           <Paper>
             <DashbordLayout>
               <DashbordLine>
-                <WeekSessions />
-                <DaySessions />
+                <Suspense fallback={<h1>Loading...</h1>}>
+                  <WeekSessions />
+                </Suspense>
+                <Suspense fallback={<h1>Loading...</h1>}>
+                  <DaySessions />
+                </Suspense>
               </DashbordLine>
-              <Map allEvents={allEvents} />
+              <Suspense fallback={<h1>Loading...</h1>}>
+                <Map allEvents={allEvents} />
+              </Suspense>
               <DashbordLine>
-                <UrlPie allEvents={allEvents!} />
-                <OsBar allEvents={allEvents!} />
+                <Suspense fallback={<h1>Loading...</h1>}>
+                  <UrlPie allEvents={allEvents!} />
+                </Suspense>
+                <Suspense fallback={<h1>Loading...</h1>}>
+                  <OsBar allEvents={allEvents!} />
+                </Suspense>
               </DashbordLine>
-              <RetentionCohort />
+              <Suspense fallback={<h1>Loading...</h1>}>
+                <RetentionCohort />
+              </Suspense>
             </DashbordLayout>
           </Paper>
         </>

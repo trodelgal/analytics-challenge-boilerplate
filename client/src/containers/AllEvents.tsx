@@ -3,10 +3,8 @@ import { Interpreter } from "xstate";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { AuthMachineContext, AuthMachineEvents } from "../machines/authMachine";
-import { Event } from "../models/event";
 import { useService } from "@xstate/react";
 import EventsLog from "../components/tiles/EventsLog";
-import { DashbordLayout, DashbordLine } from "../components/tiles/style";
 
 export interface Props {
   authService: Interpreter<AuthMachineContext, any, AuthMachineEvents, any>;

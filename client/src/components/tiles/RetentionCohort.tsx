@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { weeklyRetentionObject } from "../../models/event";
 import axios from "axios";
 import { withStyles, Theme, createStyles, makeStyles } from "@material-ui/core/styles";
@@ -11,7 +11,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
+import { OneWeek } from "../../helpFunctions";
 import {
   FullLineContainer,
   DarkBlueCell,
@@ -64,6 +64,7 @@ const RetentionCohort: React.FC = () => {
     const { data } = await axios.get(
       `http://localhost:3001/events/retention?dayZero=${dayZero}`
     );
+    // use random data to see the table style
     const randomData = data.map((obj:weeklyRetentionObject)=>{
       let dataWeeklyRetention:number[] = []
       obj.weeklyRetention.forEach((number,i)=>{
@@ -101,12 +102,11 @@ for (let i=0; i<11; i++){
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            // defaultValue={getDayString(Date.now())}
             onChange={handleDayZeroChange}
           >
             {
               weeks.map((week,i) => {
-              return <MenuItem value={week}>{`week ${i}`}</MenuItem>
+              return <MenuItem key={i} value={week}>{`week ${i}`}</MenuItem>
               })
             }
           </Select>
@@ -117,7 +117,7 @@ for (let i=0; i<11; i++){
             <StyledTableCell></StyledTableCell>
             {retentionData &&
               retentionData.map((week, i) => {
-                return <StyledTableCell align="right"> Week {i}</StyledTableCell>;
+                return <StyledTableCell key={i} align="right"> Week {i}</StyledTableCell>;
               })}
           </TableRow>
         </TableHead>
@@ -131,20 +131,20 @@ for (let i=0; i<11; i++){
                     <br />
                     <label>{`New User: ${week.newUsers}`}</label>
                   </StyledTableCell>
-                  {week.weeklyRetention.map((value) => {
+                  {week.weeklyRetention.map((value,i) => {
                     if (value < 100 && value >= 75) {
-                      return <DarkBlueCell align="right">{`${value}%`}</DarkBlueCell>;
+                      return <DarkBlueCell key={i} align="right">{`${value}%`}</DarkBlueCell>;
                     }
                     if (value < 75 && value >= 50) {
-                      return <MediumBlueCell align="right">{`${value}%`}</MediumBlueCell>;
+                      return <MediumBlueCell key={i} align="right">{`${value}%`}</MediumBlueCell>;
                     }
                     if (value < 50 && value >= 25) {
-                      return <MediumLightBlueCell align="right">{`${value}%`}</MediumLightBlueCell>;
+                      return <MediumLightBlueCell key={i} align="right">{`${value}%`}</MediumLightBlueCell>;
                     }
                     if (value < 25 && value >= 0) {
-                      return <LightBlueCell align="right">{`${value}%`}</LightBlueCell>;
+                      return <LightBlueCell key={i} align="right">{`${value}%`}</LightBlueCell>;
                     } else {
-                      return <StyledTableCell align="right">{`${value}%`}</StyledTableCell>;
+                      return <StyledTableCell key={i} align="right">{`${value}%`}</StyledTableCell>;
                     }
                   })}
                 </StyledTableRow>

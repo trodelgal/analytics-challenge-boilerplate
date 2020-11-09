@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import { DaysEvents } from "../../models/event";
 import {
@@ -10,10 +10,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  ReferenceLine,
 } from "recharts";
 import axios from "axios";
-import { getDayString, getStartOfDayTime, OneHour, OneDay, OneWeek } from "../../helpFunctions";
+import { getStartOfDayTime, OneDay } from "../../helpFunctions";
 import { ChartTitle, ChartCard } from "./style";
 
 const WeekSessions: React.FC = () => {

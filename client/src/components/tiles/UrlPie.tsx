@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Legend, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import { Event } from "../../models/event";
 import { ChartTitle, PieChartCard } from "./style";

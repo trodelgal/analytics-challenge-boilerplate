@@ -1,10 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import { GoogleMap, LoadScript, Marker, MarkerClusterer } from "@react-google-maps/api";
 import { Event } from "../../models/event";
-import axios from "axios";
 import {MapContainer} from "./style";
 import {REACT_APP_GOOGLE_KEY} from '../secret'
-// require("dotenv").config();
 
 interface MapProps {
   allEvents: Event[] | undefined;
@@ -33,6 +31,7 @@ const Map: React.FC<MapProps> = ({ allEvents }) => {
                 allEvents.map((event) => {
                   return (
                     <Marker
+                      key={event._id}
                       position={{
                         lat: event.geolocation.location.lat,
                         lng: event.geolocation.location.lng,

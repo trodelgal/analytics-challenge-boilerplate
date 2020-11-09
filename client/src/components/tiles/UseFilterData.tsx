@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import axios from "axios";
-import { eventName, os, browser, sorting, Event, Filter } from "../../models/event";
+import { eventName, browser, sorting, Event } from "../../models/event";
 
 export default function useFilterData(sorting:sorting, type:eventName, browser:browser, search:string, offset:number) {
     const [loading,setLoading] = useState<boolean>(true)
