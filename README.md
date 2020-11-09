@@ -55,6 +55,22 @@
 
 ![](./readme-pic/main.gif)
 
+## Getting Started
+  
+use `npm run init` __in the project root__ to download both the client and server dependencies, or :   
+- Setup server  
+    1. `cd server`  
+    3. `npm i` 
+    3. `npm start` in `/server`. (yes, in server)
+    4. `npm run test` - runs backend tests (required to pass).
+- Setup client  
+    1. `cd client`  
+    3. `npm i` 
+    3. `npm start` in `/client`. this can take a while
+- After installing all dependencies, you can also use `npm run dev` in in either folder to run both concurrently.
+
+- Note: do not delete the root folder's package.json, it is necessary.
+
 #### Libraries:
 - muterial UI.
 - recharts.
