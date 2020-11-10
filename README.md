@@ -19,12 +19,12 @@
 
 ## client
 ### Main Work In `/src/components/tiles` Folder.
-#### Admin Events Statistics Page (`/src/container/DashBoard.tsx`) With 6 Tiles (only Admin users can can watch it):
+#### Admin Events Statistics Page (`/src/container/DashBoard.tsx`) With 6 Tiles (only Admin users can watch it):
 - `Week Sessions`- Showing line graph with unique sessions by day with option to change date. 
 
 ![](./readme-pic/SessionsEachDay.png)
 
-- `Day Sessions`- Showing line graph with unique sessions by hour with option to change date, and compare between 2 date.
+- `Day Sessions`- Showing line graph with unique sessions by hour with option to change date and compare between 2 date.
 
 ![](./readme-pic/DaySessions.png)
 
@@ -58,7 +58,7 @@
 
 ## Getting Started
   
-use `npm run init` __in the project root__ to download both the client and server dependencies, or :   
+use `npm run init` __in the project root__ to download both the client and server dependencies.   
 - Setup server  
     1. `cd server`  
     3. `npm i` 
