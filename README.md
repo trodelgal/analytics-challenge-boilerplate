@@ -1,9 +1,10 @@
 # My Work
 ## server
 ### Work On `event-routes.ts` File
+- server work with express and database with lowDB.
 #### End Points:
 - `/all` - Return all the events from DB. 
-- `/all-filtered` - Return all the evemts from DB filtered by type, browser and search text. Option to limit the numbers of the events and sort them by event date. 
+- `/all-filtered` - Return all the events from DB filtered by type, browser and search text. Option to limit the numbers of the events and sort them by event date. 
 - `/by-days/:offset` - Return count of unique sessions (events with different session_id), grouped by days, for one week. 
 `Offset` is the number of days to go back from today and start count week back from this day.
 - `/by-hours/:offset` - Return count of unique sessions (events with different session_id), grouped by hour, for one day.
@@ -61,8 +62,8 @@ use `npm run init` __in the project root__ to download both the client and serve
 - Setup server  
     1. `cd server`  
     3. `npm i` 
-    3. `npm start` in `/server`. (yes, in server)
-    4. `npm run test` - runs backend tests (required to pass).
+    3. `npm start` in `/server`
+    4. `npm run test` - runs backend tests
 - Setup client  
     1. `cd client`  
     3. `npm i` 
