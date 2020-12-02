@@ -46,6 +46,7 @@ router.get("/all", (req: Request, res: Response) => {
   }
 });
 
+// all the events filer by user
 router.get("/all-filtered", (req: Request, res: Response) => {
   try {
     const filters: Filter = req.query;
@@ -98,6 +99,7 @@ router.get("/all-filtered", (req: Request, res: Response) => {
   }
 });
 
+// get all the enents by days to show in ilne chart
 router.get("/by-days/:offset", (req: Request, res: Response) => {
   try {
     let { offset } = req.params;
@@ -124,6 +126,7 @@ router.get("/by-days/:offset", (req: Request, res: Response) => {
   }
 });
 
+// get all the day enents by hours to show in ilne chart
 router.get("/by-hours/:offset", (req: Request, res: Response) => {
   try {
     let { offset } = req.params;
@@ -160,6 +163,7 @@ router.get("/by-hours/:offset", (req: Request, res: Response) => {
   }
 });
 
+// get all this day events
 router.get("/today", (req: Request, res: Response) => {
   try {
     const todeyEvents = todayEvents();
@@ -169,6 +173,7 @@ router.get("/today", (req: Request, res: Response) => {
   }
 });
 
+// get all this week events 
 router.get("/week", (req: Request, res: Response) => {
   try {
     const thisWeekEvent = thisWeekEvents();
@@ -178,6 +183,7 @@ router.get("/week", (req: Request, res: Response) => {
   }
 });
 
+// get the event for retention cohort
 router.get("/retention", (req: Request, res: Response) => {
   try {
     let dayZero = getStartOfDayTime(parseInt(req.query.dayZero));
@@ -248,6 +254,7 @@ router.get("/retention", (req: Request, res: Response) => {
   }
 });
 
+// get by event id
 router.get("/:eventId", (req: Request, res: Response) => {
   try {
     const event: Event[] = getEventById(req.params.eventId);
@@ -257,6 +264,7 @@ router.get("/:eventId", (req: Request, res: Response) => {
   }
 });
 
+// post new event
 router.post("/", (req: Request, res: Response) => {
   try {
     const addEvent = createEvent(req.body);
@@ -266,17 +274,4 @@ router.post("/", (req: Request, res: Response) => {
   }
 });
 
-// router.get("/all-by-users", (req: Request, res: Response) => {
-// });
-
-// router.get("/chart/pageview/:time", (req: Request, res: Response) => {
-// });
-
-// router.get("/chart/timeonurl/:time", (req: Request, res: Response) => {
-
-// });
-
-// router.get("/chart/geolocation/:time", (req: Request, res: Response) => {
-
-// });
 export default router;
